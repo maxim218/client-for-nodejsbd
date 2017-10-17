@@ -1,0 +1,83 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="UTF-8" />
+	<title>Client</title>
+</head>
+<body>
+
+<p>Имя</p>
+<input type = "text" id = "t1">
+
+<p>Возраст</p>
+<input type = "text" id = "t2">
+
+<br>
+<br>
+
+<button onclick = 'f()'>Отправить</button>
+
+<br>
+<br>
+<br>
+<br>
+
+<button onclick = 'g()'>Получить содержимое БД</button>
+
+<script>
+	function elem(s){
+	   return document.getElementById(s + "");
+	}
+
+	function g(){
+		let url = "http://localhost:5005/select_records";
+
+		let r = new XMLHttpRequest();
+		r.open("POST",url, true);
+		r.setRequestHeader("Content-Type","application/json;charset=UTF-8");
+		r.send(null);
+
+		r.onreadystatechange = function() {
+			if(r.readyState === 4 && r.status === 200) {
+				let resultString = "";
+
+				let answerObj = JSON.parse(decodeURIComponent(r.responseText));
+				for(let i = 0; i < answerObj.arr.length; i++){
+					resultString = resultString + answerObj.arr[i].name + "  " + answerObj.arr[i].age + "\n";
+				}
+				
+				alert(resultString);
+			}
+		}
+	}
+
+	function f(){
+		const s1 = elem('t1').value.toString();
+		const s2 = parseInt(elem('t2').value);
+
+				
+		let myObj = {
+			name: s1,
+			age: s2,
+			rubbish: "rubbish"
+		};
+
+		let s = encodeURIComponent(JSON.stringify(myObj));
+
+		let url = "http://localhost:5005/add_record";
+
+		let r = new XMLHttpRequest();
+		r.open("POST",url, true);
+		r.setRequestHeader("Content-Type","application/json;charset=UTF-8");
+		r.send(s);
+
+		r.onreadystatechange = function() {
+			if(r.readyState === 4 && r.status === 200) alert(r.responseText);
+		}
+	}
+</script>
+
+</body>
+</html>
+
+
